@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CorridorWatch — AJ Investment Research</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="data/corridor-data.js"></script>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --card:     #161b22;
+      --border:   #30363d;
+      --text:     #e6edf3;
+      --muted:    #7d8590;
+      --green:    #2ea043;
+      --green-lt: #3fb950;
+      --red:      #f85149;
+      --yellow:   #d29922;
+      --blue:     #388bfd;
+      --purple:   #a371f7;
+      --orange:   #f0883e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; font-size: 14px; line-height: 1.5; }
+
+    /* HEADER */
+    header { background: var(--card); border-bottom: 1px solid var(--border); padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { font-size: 28px; }
+    .logo h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .header-meta { text-align: right; font-size: 12px; color: var(--muted); }
+    .header-meta span { display: block; }
+    .badge-live { display: inline-block; background: #1a2f1a; color: var(--green-lt); border: 1px solid var(--green); border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 600; margin-bottom: 4px; }
+
+    /* MAIN */
+    main { max-width: 1400px; margin: 0 auto; padding: 24px 20px 60px; }
+
+    /* SECTION HEADERS */
+    .section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 32px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+    /* RANKINGS GRID */
+    .rankings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .rank-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .rank-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .rank-card h3 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .rank-list { list-style: none; }
+    .rank-list li { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #21262d; font-size: 13px; }
+    .rank-list li:last-child { border-bottom: none; }
+    .rank-num { font-size: 11px; color: var(--muted); width: 16px; text-align: right; flex-shrink: 0; }
+    .rank-ticker { font-weight: 700; font-size: 13px; min-width: 52px; }
+    .rank-name { color: var(--muted); font-size: 12px; flex: 1; }
+    .rank-label { font-size: 10px; font-weight: 600; border-radius: 4px; padding: 2px 6px; }
+    .best  .rank-label { display: none; }
+    .worst-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #21262d; }
+    .worst-section h4 { font-size: 11px; color: var(--red); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+
+    /* POSITIONS TABLE */
+    .positions-table { width: 100%; border-collapse: collapse; }
+    .positions-table th { text-align: left; padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .positions-table td { padding: 9px 12px; border-bottom: 1px solid #21262d; font-size: 13px; vertical-align: top; }
+    .positions-table tr:last-child td { border-bottom: none; }
+    .positions-table tr:hover td { background: #1c2128; }
+    .status-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+    .status-long  { background: #1a2f1a; color: var(--green-lt); border: 1px solid #2a6030; }
+    .status-short { background: #2d1515; color: var(--red);      border: 1px solid #6b2020; }
+    .status-watch { background: #1e2430; color: var(--blue);     border: 1px solid #1f4080; }
+    .status-avoid { background: #2a2020; color: var(--orange);   border: 1px solid #6b3020; }
+    .pos-note { color: var(--muted); font-size: 12px; max-width: 500px; line-height: 1.4; }
+    .pos-updated { color: var(--muted); font-size: 11px; }
+
+    /* CORRIDOR CHARTS GRID */
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 16px; }
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .chart-ticker { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+    .chart-name   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .chart-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .corridor-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
+    .above-corridor { background: #2d1515; color: var(--red);      border: 1px solid #6b2020; }
+    .in-corridor    { background: #1a2f1a; color: var(--green-lt); border: 1px solid #2a6030; }
+    .below-corridor { background: #1a2030; color: var(--blue);     border: 1px solid #1a4070; }
+    .no-eps         { background: #252020; color: var(--muted);    border: 1px solid #404040; }
+    .chart-canvas-wrap { position: relative; height: 160px; }
+    .chart-meta { display: flex; gap: 16px; margin-top: 10px; font-size: 11px; color: var(--muted); flex-wrap: wrap; }
+    .chart-meta span b { color: var(--text); }
+    .loading-msg { color: var(--muted); font-size: 12px; text-align: center; padding: 40px 0; }
+    .error-msg   { color: var(--red);   font-size: 12px; text-align: center; padding: 40px 0; }
+
+    /* HOW IT WORKS */
+    .method-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .method-toggle { width: 100%; background: none; border: none; color: var(--text); padding: 14px 16px; text-align: left; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .method-toggle:hover { background: #1c2128; }
+    .method-body { padding: 0 16px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+    .method-body.open { max-height: 800px; padding: 16px; }
+    .method-body p { color: var(--muted); font-size: 13px; line-height: 1.7; margin-bottom: 12px; }
+    .method-body ul { color: var(--muted); font-size: 13px; padding-left: 20px; line-height: 1.8; }
+    .method-body li b { color: var(--text); }
+
+    /* DISCLAIMER */
+    footer { background: var(--card); border-top: 1px solid var(--border); padding: 16px 28px; font-size: 11px; color: var(--muted); text-align: center; margin-top: 40px; }
+
+    /* LEGEND */
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; font-size: 11px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 20px; height: 2px; border-radius: 2px; }
+
+    @media (max-width: 600px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .header-meta { text-align: left; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .rankings-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📊</div>
+    <div>
+      <h1>CorridorWatch</h1>
+      <p>AJ Investment Research — Corridor Method Dashboard</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="badge-live">● LIVE DATA</span>
+    <span id="last-updated">Rankings: —</span>
+    <span id="prices-updated">Prices: loading…</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- RANKINGS -->
+  <div class="section-title">📈 Entry Attractiveness Rankings</div>
+  <div class="rankings-grid" id="rankings-grid"></div>
+
+  <!-- POSITIONS -->
+  <div class="section-title">🎯 AJ's Known Positions</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+    <table class="positions-table">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Status</th>
+          <th>AJ Note</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody id="positions-body"></tbody>
+    </table>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="section-title">📉 Price Corridors — All Coverage</div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#f0f6ff"></div><span>Price</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d29922;border-top:1px dashed #d29922"></div><span>Median (fair value)</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f85149;border-top:1px dashed #f85149"></div><span>Upper band (+1.5σ)</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2ea043;border-top:1px dashed #2ea043"></div><span>Lower band (−1.5σ)</span></div>
+  </div>
+  <div class="charts-grid" id="charts-grid"></div>
+
+  <!-- METHOD -->
+  <div class="section-title">📖 How the Corridor Method Works</div>
+  <div class="method-section">
+    <button class="method-toggle" onclick="toggleMethod(this)">
+      <span>Expand: The Corridor Method Explained</span>
+      <span>▼</span>
+    </button>
+    <div class="method-body">
+      <p>The <b>Corridor Method</b> is AJ's proprietary stock valuation framework, used to determine relative attractiveness of a stock's entry point based on historically-observed forward earnings multiples.</p>
+      <ul>
+        <li><b>Forward P/E Multiple:</b> At each point in time, AJ calculates the implied forward P/E = stock price ÷ next-twelve-months (NTM) EPS estimate.</li>
+        <li><b>1-Year Corridor:</b> Takes the median observed forward P/E over the last 252 trading days (1 year). The "fair value" price = median multiple × current NTM EPS. Upper band = (median + 1.5σ) × EPS. Lower band = (median − 1.5σ) × EPS.</li>
+        <li><b>90-Day Corridor:</b> Same methodology, but uses only the last 90 trading days — more sensitive to recent sentiment shifts.</li>
+        <li><b>Reading the signal:</b> Stock trading above upper band = expensive relative to its own history = least attractive entry. Stock trading below lower band = cheap relative to its own history = most attractive entry.</li>
+        <li><b>Key insight:</b> The corridor doesn't say what a stock is "worth" in absolute terms — it says whether the market is pricing it richly or cheaply <i>relative to how it has historically been priced</i>. Sentiment matters as much as fundamentals.</li>
+        <li><b>Long-term upside</b> is a separate analysis: combines earnings growth rate × likely future multiple expansion. A stock can be a poor near-term entry (above corridor) but still have huge long-term upside (PLTR).</li>
+        <li><b>PEG (Price/Earnings-to-Growth):</b> Identifies the cheapest growth — stocks where you pay the least per unit of earnings growth expected. Oracle and AMD consistently screen cheapest here.</li>
+      </ul>
+      <p style="margin-top:12px;">AJ's edge: more accurate EPS estimates than Wall Street consensus (3% error vs 7% on Apple; near-perfect on Oracle). More accurate estimates → more accurate corridor bounds → better entry signals.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  ⚠️ Data sourced from <b>@alojoh — AJ Investment Research</b> (subscriber content on X). All rankings, positions, and analysis reflect AJ's published views. This site is for informational purposes only. <b>Not financial advice.</b> Rankings updated manually from subscriber posts. Charts use live Yahoo Finance data.
+</footer>
+
+<script>
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
+function stddev(arr) {
+  const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+  return Math.sqrt(arr.reduce((sum, v) => sum + (v - mean) ** 2, 0) / arr.length);
+}
+function median(arr) {
+  const s = [...arr].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+
+// ─── Rankings Cards ─────────────────────────────────────────────────────────
+
+function buildRankings() {
+  const el = document.getElementById('rankings-grid');
+  const { rankings, tickers } = CORRIDOR_DATA;
+  document.getElementById('last-updated').textContent = 'Rankings: ' + CORRIDOR_DATA.lastUpdated;
+
+  Object.values(rankings).forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'rank-card';
+    const getName = t => tickers[t]?.name || t;
+
+    const bestItems = r.best.map((t, i) => `
+      <li>
+        <span class="rank-num">${i + 1}</span>
+        <span class="rank-ticker">${t}</span>
+        <span class="rank-name">${getName(t)}</span>
+      </li>`).join('');
+
+    const worstItems = r.worst.map((t, i) => `
+      <li>
+        <span class="rank-num">${i + 1}</span>
+        <span class="rank-ticker" style="color:var(--red)">${t}</span>
+        <span class="rank-name">${getName(t)}</span>
+      </li>`).join('');
+
+    card.innerHTML = `
+      <h3>
+        <span class="dot" style="background:${r.color}"></span>
+        ${r.label}
+      </h3>
+      <ul class="rank-list best">${bestItems}</ul>
+      <div class="worst-section">
+        <h4>⚠ Least Attractive</h4>
+        <ul class="rank-list">${worstItems}</ul>
+      </div>`;
+    el.appendChild(card);
+  });
+}
+
+// ─── Positions Table ─────────────────────────────────────────────────────────
+
+function buildPositions() {
+  const tbody = document.getElementById('positions-body');
+  CORRIDOR_DATA.positions.forEach(p => {
+    const statusMap = {
+      long:  ['🟢 Long',   'status-long'],
+      short: ['🔴 Short',  'status-short'],
+      watch: ['🔵 Watch',  'status-watch'],
+      avoid: ['🟠 Avoid',  'status-avoid'],
+    };
+    const [label, cls] = statusMap[p.status] || ['—', ''];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><b>${p.ticker}</b></td>
+      <td><span class="status-badge ${cls}">${label}</span></td>
+      <td class="pos-note">${p.note}</td>
+      <td class="pos-updated">${p.updated}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ─── Corridor Charts ─────────────────────────────────────────────────────────
+
+const PROXY = 'https://corsproxy.io/?';
+const YF_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart/';
+
+async function fetchPrices(yf_ticker) {
+  const url = `${YF_BASE}${encodeURIComponent(yf_ticker)}?interval=1d&range=1y`;
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(url));
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    const result = json.chart?.result?.[0];
+    if (!result) throw new Error('No data');
+    const timestamps = result.timestamp;
+    const closes = result.indicators.quote[0].close;
+    return timestamps.map((ts, i) => ({
+      date: new Date(ts * 1000),
+      close: closes[i],
+    })).filter(d => d.close != null);
+  } catch (e) {
+    return null;
+  }
+}
+
+function computeCorridors(prices, forwardEPS, windowDays = 252) {
+  if (!forwardEPS || forwardEPS <= 0) return null;
+  const multiples = prices.map(p => p.close / forwardEPS);
+  const results = [];
+  for (let i = 0; i < prices.length; i++) {
+    const start = Math.max(0, i - windowDays + 1);
+    const window = multiples.slice(start, i + 1);
+    const med = median(window);
+    const sd  = stddev(window);
+    results.push({
+      date:   prices[i].date,
+      price:  prices[i].close,
+      median: med * forwardEPS,
+      upper:  (med + 1.5 * sd) * forwardEPS,
+      lower:  (med - 1.5 * sd) * forwardEPS,
+    });
+  }
+  return results;
+}
+
+function corridorBadge(price, upper, lower) {
+  if (price > upper) return ['ABOVE CORRIDOR', 'above-corridor'];
+  if (price < lower) return ['BELOW CORRIDOR', 'below-corridor'];
+  return ['IN RANGE', 'in-corridor'];
+}
+
+async function buildChartCard(ticker, info) {
+  const grid = document.getElementById('charts-grid');
+  const card = document.createElement('div');
+  card.className = 'chart-card';
+  card.id = 'card-' + ticker;
+
+  const eps = CORRIDOR_DATA.forwardEPS[ticker];
+  const positionInfo = CORRIDOR_DATA.positions.find(p => p.ticker === ticker);
+
+  card.innerHTML = `
+    <div class="chart-header">
+      <div>
+        <div class="chart-ticker">${ticker}</div>
+        <div class="chart-name">${info.name} · ${info.exchange}</div>
+      </div>
+      <div class="chart-badges" id="badges-${ticker}">
+        <div class="corridor-badge no-eps">Loading…</div>
+      </div>
+    </div>
+    <div class="chart-canvas-wrap">
+      <canvas id="canvas-${ticker}"></canvas>
+    </div>
+    <div class="chart-meta" id="meta-${ticker}">
+      <span>Fetching price data…</span>
+    </div>`;
+  grid.appendChild(card);
+
+  // Fetch + render async
+  const prices = await fetchPrices(info.yf);
+  const badgesEl = document.getElementById('badges-' + ticker);
+  const metaEl   = document.getElementById('meta-' + ticker);
+
+  if (!prices || prices.length < 10) {
+    badgesEl.innerHTML = '<div class="corridor-badge no-eps">No data</div>';
+    metaEl.innerHTML = '<span style="color:var(--red)">Could not fetch price data</span>';
+    return;
+  }
+
+  const corridors = eps && eps > 0 ? computeCorridors(prices, eps, 252) : null;
+  const latest = prices[prices.length - 1];
+  const labels = prices.map(d => d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+  // Badges
+  if (corridors) {
+    const last = corridors[corridors.length - 1];
+    const [badgeText, badgeCls] = corridorBadge(latest.close, last.upper, last.lower);
+    const fwdPE = (latest.close / eps).toFixed(1);
+
+    badgesEl.innerHTML = `
+      <div class="corridor-badge ${badgeCls}">${badgeText}</div>
+      <div style="font-size:11px;color:var(--muted);text-align:right">Fwd P/E: ${fwdPE}x</div>`;
+
+    const pct1Y = ((latest.close - prices[0].close) / prices[0].close * 100).toFixed(1);
+    const upToMedian = ((last.median - latest.close) / latest.close * 100).toFixed(1);
+    metaEl.innerHTML = `
+      <span>Price: <b>$${latest.close.toFixed(2)}</b></span>
+      <span>1Y Chg: <b style="color:${pct1Y >= 0 ? 'var(--green-lt)' : 'var(--red)'}">${pct1Y >= 0 ? '+' : ''}${pct1Y}%</b></span>
+      <span>To Median: <b style="color:${upToMedian >= 0 ? 'var(--green-lt)' : 'var(--red)'}">${upToMedian >= 0 ? '+' : ''}${upToMedian}%</b></span>
+      <span>Fwd EPS: <b>$${eps}</b></span>`;
+  } else {
+    const pct1Y = ((latest.close - prices[0].close) / prices[0].close * 100).toFixed(1);
+    badgesEl.innerHTML = `<div class="corridor-badge no-eps">NO EPS DATA</div>`;
+    metaEl.innerHTML = `
+      <span>Price: <b>$${latest.close.toFixed(2)}</b></span>
+      <span>1Y Chg: <b style="color:${pct1Y >= 0 ? 'var(--green-lt)' : 'var(--red)'}">${pct1Y >= 0 ? '+' : ''}${pct1Y}%</b></span>
+      <span style="color:var(--muted)">Corridor unavailable (negative/no EPS)</span>`;
+  }
+
+  // Chart datasets
+  const datasets = [
+    {
+      label: 'Price',
+      data: prices.map(d => d.close),
+      borderColor: '#e6edf3',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      tension: 0.2,
+      order: 1,
+    }
+  ];
+
+  if (corridors) {
+    datasets.push(
+      {
+        label: 'Upper (+1.5σ)',
+        data: corridors.map(d => d.upper),
+        borderColor: '#f85149',
+        borderWidth: 1,
+        borderDash: [4, 3],
+        pointRadius: 0,
+        tension: 0.2,
+        fill: false,
+        order: 2,
+      },
+      {
+        label: 'Median',
+        data: corridors.map(d => d.median),
+        borderColor: '#d29922',
+        borderWidth: 1,
+        borderDash: [6, 3],
+        pointRadius: 0,
+        tension: 0.2,
+        fill: false,
+        order: 3,
+      },
+      {
+        label: 'Lower (−1.5σ)',
+        data: corridors.map(d => d.lower),
+        borderColor: '#2ea043',
+        borderWidth: 1,
+        borderDash: [4, 3],
+        pointRadius: 0,
+        tension: 0.2,
+        backgroundColor: 'rgba(46,160,67,0.05)',
+        fill: '+1',
+        order: 4,
+      }
+    );
+  }
+
+  const ctx = document.getElementById('canvas-' + ticker).getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#1c2128',
+          borderColor: '#30363d',
+          borderWidth: 1,
+          titleColor: '#e6edf3',
+          bodyColor: '#7d8590',
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y?.toFixed(2) ?? '—'}`,
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#7d8590',
+            font: { size: 9 },
+            maxTicksLimit: 6,
+            maxRotation: 0,
+          },
+          grid: { color: '#21262d' },
+        },
+        y: {
+          ticks: { color: '#7d8590', font: { size: 9 } },
+          grid: { color: '#21262d' },
+        }
+      }
+    }
+  });
+}
+
+async function buildCharts() {
+  const { tickers } = CORRIDOR_DATA;
+  // Stagger loads to avoid rate limiting
+  const entries = Object.entries(tickers);
+  for (const [ticker, info] of entries) {
+    await buildChartCard(ticker, info);
+    document.getElementById('prices-updated').textContent =
+      'Prices: ' + new Date().toLocaleTimeString();
+    await new Promise(r => setTimeout(r, 300)); // polite delay
+  }
+}
+
+// ─── Method Toggle ───────────────────────────────────────────────────────────
+
+function toggleMethod(btn) {
+  const body = btn.nextElementSibling;
+  const arrow = btn.querySelector('span:last-child');
+  body.classList.toggle('open');
+  arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+buildRankings();
+buildPositions();
+buildCharts();
+</script>
+
+</body>
+</html>
