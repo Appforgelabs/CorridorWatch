@@ -5,42 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CorridorWatch — AJ Investment Research</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
   <script src="data/corridor-data.js"></script>
   <script src="data/prices.js"></script>
   <style>
     :root {
-      --bg:      #0d1117;
-      --card:    #161b22;
-      --card2:   #1c2128;
-      --border:  #30363d;
-      --text:    #e6edf3;
-      --muted:   #7d8590;
-      --green:   #2ea043;
-      --green2:  #3fb950;
-      --red:     #f85149;
-      --yellow:  #d29922;
-      --blue:    #388bfd;
-      --purple:  #a371f7;
-      --orange:  #f0883e;
+      --bg:     #0d1117;
+      --card:   #161b22;
+      --card2:  #1c2128;
+      --border: #30363d;
+      --text:   #e6edf3;
+      --muted:  #7d8590;
+      --green2: #3fb950;
+      --red:    #f85149;
+      --blue:   #388bfd;
+      --orange: #f0883e;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; font-size: 14px; line-height: 1.5; }
 
-    /* ── HEADER ─────────────────────────────────── */
+    /* ── HEADER ── */
     header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .logo { display: flex; align-items: center; gap: 12px; }
     .logo h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
     .logo p  { font-size: 12px; color: var(--muted); }
-    .header-right { text-align: right; font-size: 11px; color: var(--muted); line-height: 1.8; }
+    .header-right { text-align: right; font-size: 11px; color: var(--muted); line-height: 1.9; }
     .pill { display: inline-block; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 600; }
-    .pill-green { background: #1a3020; color: var(--green2); border: 1px solid var(--green); }
-    .pill-muted { background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+    .pill-green { background:#1a3020; color:var(--green2); border:1px solid #2ea043; }
 
-    /* ── LAYOUT ─────────────────────────────────── */
+    /* ── LAYOUT ── */
     main { max-width: 1440px; margin: 0 auto; padding: 24px 20px 60px; }
-    .section-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .section-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 
-    /* ── RANKINGS ───────────────────────────────── */
+    /* ── RANKINGS ── */
     .rankings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
     .rank-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
     .rank-title { font-size: 12px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
@@ -50,17 +47,17 @@
     .rank-item:last-child { border-bottom: none; }
     .rank-n  { font-size: 11px; color: var(--muted); width: 14px; text-align: right; flex-shrink: 0; }
     .rank-t  { font-weight: 700; font-size: 13px; min-width: 48px; }
-    .rank-name { color: var(--muted); font-size: 12px; }
+    .rank-nm { color: var(--muted); font-size: 12px; }
     .worst-sep { margin-top: 12px; padding-top: 10px; border-top: 1px solid #21262d; }
     .worst-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--red); margin-bottom: 8px; }
 
-    /* ── POSITIONS ──────────────────────────────── */
+    /* ── POSITIONS ── */
     .pos-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .pos-table { width: 100%; border-collapse: collapse; }
     .pos-table th { text-align: left; padding: 9px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); background: var(--card2); border-bottom: 1px solid var(--border); }
     .pos-table td { padding: 9px 14px; border-bottom: 1px solid #21262d; font-size: 13px; vertical-align: middle; }
     .pos-table tr:last-child td { border-bottom: none; }
-    .pos-table tr:hover td { background: #1c2128; }
+    .pos-table tr:hover td { background: var(--card2); }
     .sbadge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
     .sb-long  { background:#1a3020; color:var(--green2); border:1px solid #2a5030; }
     .sb-short { background:#2d1515; color:var(--red);    border:1px solid #5a2020; }
@@ -69,47 +66,167 @@
     .pos-note { color: var(--muted); font-size: 12px; max-width: 480px; line-height: 1.45; }
     .pos-date { color: var(--muted); font-size: 11px; white-space: nowrap; }
 
-    /* ── CHART GRID ─────────────────────────────── */
-    .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 16px; }
-    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 16px 12px; }
-    .cc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-    .cc-left .ticker { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-    .cc-left .cname  { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .cc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
-    .cbadge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.4px; }
-    .cb-above { background:#2d1515; color:var(--red);    border:1px solid #5a2020; }
-    .cb-in    { background:#1a3020; color:var(--green2); border:1px solid #2a5030; }
-    .cb-below { background:#1a2440; color:var(--blue);   border:1px solid #1a4080; }
-    .cb-none  { background:var(--card2); color:var(--muted); border:1px solid var(--border); }
-    .chart-wrap { position: relative; height: 180px; }
-    .cc-stats { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 11px; color: var(--muted); }
-    .cc-stats b { color: var(--text); }
+    /* ── CHART GRID ── */
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 20px; }
 
-    /* ── LEGEND ─────────────────────────────────── */
-    .legend-bar { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; font-size: 11px; color: var(--muted); }
-    .leg { display: flex; align-items: center; gap: 6px; }
-    .leg-line { width: 22px; height: 2px; border-radius: 2px; }
-    .leg-dash { border-top: 2px dashed; width: 22px; }
+    /* ── AJ-STYLE CORRIDOR CARD ── */
+    .corridor-card {
+      background: #FAF6F1;  /* AJ's warm cream */
+      border: 1px solid #D6CFC7;
+      border-radius: 4px;
+      overflow: hidden;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #222;
+    }
+    /* Header banner */
+    .cc-banner {
+      background: #D6CFC7;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .cc-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+    .cc-slide-num {
+      background: #4A4A4A;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: -apple-system, sans-serif;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .cc-headline {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: Georgia, serif;
+      line-height: 1.4;
+      color: #111;
+    }
+    .cc-headline .hl-red { color: #CC0000; }
+    .cc-logo {
+      font-size: 11px;
+      font-weight: 700;
+      color: #444;
+      white-space: nowrap;
+      font-family: -apple-system, sans-serif;
+    }
 
-    /* ── METHOD ─────────────────────────────────── */
+    /* Body = chart + annotation */
+    .cc-body {
+      display: flex;
+      gap: 0;
+    }
+    .cc-chart-area {
+      flex: 1;
+      padding: 10px 6px 4px 10px;
+      min-width: 0;
+    }
+    .cc-chart-title {
+      font-size: 11px;
+      color: #444;
+      margin-bottom: 4px;
+      font-family: Georgia, serif;
+    }
+    .cc-chart-title .red { color: #CC0000; font-style: italic; }
+    .cc-y-label {
+      font-size: 9px;
+      color: #888;
+      margin-bottom: 2px;
+      font-family: -apple-system, sans-serif;
+    }
+    .cc-canvas-wrap { position: relative; height: 220px; }
+
+    /* Legend */
+    .cc-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      padding: 6px 10px 8px;
+      font-size: 10px;
+      color: #555;
+      font-family: -apple-system, sans-serif;
+      border-top: 1px solid #D6CFC7;
+    }
+    .cc-leg-item { display: flex; align-items: center; gap: 5px; }
+    .cc-leg-line { width: 22px; height: 2px; border-radius: 1px; display: inline-block; }
+    .cc-leg-dash { display: inline-block; width: 22px; border-top: 2px dashed; }
+    .cc-formula {
+      font-size: 9px;
+      color: #888;
+      margin-left: auto;
+      font-style: italic;
+    }
+
+    /* Annotation panel */
+    .cc-annotation {
+      width: 170px;
+      flex-shrink: 0;
+      background: #EDEAE5;
+      border-left: 1px solid #D6CFC7;
+      padding: 10px 10px 8px;
+      font-family: -apple-system, sans-serif;
+    }
+    .cc-ann-date {
+      background: #C47A52;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 2px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+    .cc-ann-body { font-size: 10px; color: #333; line-height: 1.6; }
+    .cc-ann-body .bullet { display: flex; gap: 5px; margin-bottom: 5px; }
+    .cc-ann-body .bullet::before { content: "■"; color: #555; flex-shrink: 0; font-size: 8px; margin-top: 2px; }
+    .cc-ann-stat { margin-bottom: 4px; }
+    .cc-ann-stat .lbl { color: #888; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .cc-ann-stat .val { font-size: 13px; font-weight: 700; color: #111; }
+    .cc-corridor-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 2px;
+      margin-bottom: 6px;
+    }
+    .cb-above { background:#f8d7d7; color:#8b0000; border:1px solid #CC0000; }
+    .cb-in    { background:#d4edda; color:#155724; border:1px solid #2ea043; }
+    .cb-below { background:#d1ecf1; color:#0c5460; border:1px solid #388bfd; }
+    .cb-none  { background:#e9ecef; color:#495057; border:1px solid #adb5bd; }
+
+    /* Attribution */
+    .cc-attr { font-size: 9px; color: #aaa; padding: 2px 10px 4px; font-family: -apple-system, sans-serif; }
+
+    /* ── METHOD ── */
     .method-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .method-btn  { width: 100%; background: none; border: none; color: var(--text); padding: 14px 16px; text-align: left; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
     .method-btn:hover { background: var(--card2); }
     .method-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
-    .method-body.open { max-height: 1000px; }
+    .method-body.open { max-height: 1200px; }
     .method-inner { padding: 16px; }
     .method-inner p  { color: var(--muted); font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
     .method-inner ul { color: var(--muted); font-size: 13px; padding-left: 20px; line-height: 1.9; }
     .method-inner li b { color: var(--text); }
 
-    /* ── FOOTER ─────────────────────────────────── */
     footer { background: var(--card); border-top: 1px solid var(--border); padding: 14px 28px; font-size: 11px; color: var(--muted); text-align: center; }
 
-    @media(max-width:600px){
+    @media(max-width:640px){
       header { flex-direction: column; align-items: flex-start; }
-      .header-right { text-align: left; }
       .charts-grid { grid-template-columns: 1fr; }
-      .rankings-grid { grid-template-columns: 1fr; }
+      .cc-annotation { display: none; }
     }
   </style>
 </head>
@@ -124,40 +241,28 @@
     </div>
   </div>
   <div class="header-right">
-    <span class="pill pill-green">● STATIC DATA</span><br>
-    <span>Rankings: <b id="rank-date">—</b></span><br>
-    <span>Prices: <b id="price-date">—</b></span>
+    <span class="pill pill-green">● LIVE</span><br>
+    Rankings: <b id="rank-date">—</b><br>
+    Prices as of: <b id="price-date">—</b>
   </div>
 </header>
 
 <main>
 
-  <!-- RANKINGS -->
-  <div class="section-header">📈 Entry Attractiveness Rankings (Mar 14, 2026)</div>
+  <div class="section-header">📈 Entry Attractiveness Rankings</div>
   <div class="rankings-grid" id="rankings-grid"></div>
 
-  <!-- POSITIONS -->
   <div class="section-header">🎯 AJ's Known Positions</div>
   <div class="pos-wrap">
     <table class="pos-table">
-      <thead><tr>
-        <th>Ticker</th><th>Status</th><th>AJ's Note</th><th>Updated</th>
-      </tr></thead>
+      <thead><tr><th>Ticker</th><th>Status</th><th>AJ's Note</th><th>Updated</th></tr></thead>
       <tbody id="positions-body"></tbody>
     </table>
   </div>
 
-  <!-- CHARTS -->
-  <div class="section-header">📉 Price Corridors — 1Y Observed Multiple (±1.5σ)</div>
-  <div class="legend-bar">
-    <div class="leg"><div class="leg-line" style="background:#e6edf3"></div>Price</div>
-    <div class="leg"><div class="leg-dash" style="border-color:#d29922"></div>Median fair value</div>
-    <div class="leg"><div class="leg-dash" style="border-color:#f85149"></div>Upper band (+1.5σ)</div>
-    <div class="leg"><div class="leg-dash" style="border-color:#2ea043"></div>Lower band (−1.5σ)</div>
-  </div>
+  <div class="section-header">📉 Share Price Corridors — Implied from NTM P/E Multiple (±1.5σ / ±1.0σ)</div>
   <div class="charts-grid" id="charts-grid"></div>
 
-  <!-- METHOD -->
   <div class="section-header">📖 How the Corridor Method Works</div>
   <div class="method-card">
     <button class="method-btn" onclick="toggleMethod(this)">
@@ -165,23 +270,23 @@
     </button>
     <div class="method-body">
       <div class="method-inner">
-        <p>The <b>Corridor Method</b> is AJ's proprietary valuation framework. It answers: is this stock cheap or expensive <i>relative to how the market has historically priced it</i>?</p>
+        <p>The <b>Corridor Method</b> — developed by AJ Investment Research (@alojoh) — answers: is this stock cheap or expensive <i>relative to how the market has historically priced it</i>?</p>
         <ul>
-          <li><b>Forward P/E observed:</b> At each point in time, implied P/E = stock price ÷ NTM EPS estimate.</li>
-          <li><b>Rolling median + σ:</b> Over the past 1 year (252 days), compute the median and standard deviation of those daily observed multiples.</li>
-          <li><b>Corridor bands:</b> Upper = (median + 1.5σ) × EPS. Lower = (median − 1.5σ) × EPS. These are the "normal" price range.</li>
-          <li><b>90-Day corridor:</b> Same method using only the last 90 days — more sensitive to recent sentiment shifts.</li>
-          <li><b>Signal:</b> Trading above upper band = historically expensive = least attractive entry. Below lower band = historically cheap = most attractive entry.</li>
-          <li><b>Long-term upside</b> is separate — combines expected earnings growth × future multiple. A stock can be poor near-term (above corridor) but still have huge long-term upside (e.g. PLTR).</li>
-          <li><b>AJ's edge:</b> More accurate EPS estimates than Wall Street consensus (3% error vs 7% on AAPL; near-perfect on ORCL) → more accurate corridor bounds → better signals.</li>
+          <li><b>Observed forward P/E:</b> At each point in time, the implied forward P/E = stock price ÷ NTM EPS estimate.</li>
+          <li><b>Rolling statistics:</b> Over a lookback window (90-day or 1-year), compute the median and standard deviation of those daily observed multiples.</li>
+          <li><b>5-band corridor:</b> Five lines — ±1.5σ outer (red), ±1.0σ inner (green), median (gray dashed) — bound four fill zones. Outer zones (±1.0σ to ±1.5σ) are shaded red; inner zones (median to ±1.0σ) are shaded green.</li>
+          <li><b>Signal reading:</b> Price above upper red line = historically expensive, least attractive entry. Price in green zone = fair value. Price below lower red line = historically cheap, most attractive entry.</li>
+          <li><b>Price targets:</b> 12M and 24M targets = median multiple × forward EPS at those future dates (based on projected earnings growth).</li>
+          <li><b>AJ's edge:</b> Proprietary EPS estimates more accurate than Wall Street consensus (3% vs 7% error on AAPL; near-perfect on ORCL). More accurate EPS → more accurate corridor → better entry signals.</li>
         </ul>
+        <p style="margin-top:12px;"><b>Formula:</b> EPS (NTM) × P/E (NTM) = Share Price (implied)</p>
       </div>
     </div>
   </div>
 
 </main>
 
-<footer>⚠ Data from <b>@alojoh — AJ Investment Research</b> (subscriber posts on X). Not financial advice. Price data: Alpha Vantage (last 100 trading days). Rankings updated manually after each weekly AJ post.</footer>
+<footer>⚠ Data sourced from <b>@alojoh — AJ Investment Research</b> (subscriber posts on X). Visual format inspired by AJ's corridor charts. Not financial advice. Prices: Alpha Vantage. Rankings updated manually after each weekly AJ post.</footer>
 
 <script>
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -193,41 +298,33 @@ function arrStddev(a) {
   const mu = a.reduce((s,v)=>s+v,0)/a.length;
   return Math.sqrt(a.reduce((s,v)=>s+(v-mu)**2,0)/a.length);
 }
-function fmt(n) { return n == null ? '—' : n >= 1000 ? '$'+n.toFixed(0) : '$'+n.toFixed(2); }
+function $f(n, dec=2) { return n == null ? '—' : (n>=1000?'$'+n.toFixed(0):'$'+n.toFixed(dec)); }
 function fmtPct(n) { return (n>=0?'+':'')+n.toFixed(1)+'%'; }
+function fmtDate(d) {
+  return new Date(d+'T00:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
 
 // ── Rankings ─────────────────────────────────────────────────────────────────
 function buildRankings() {
   const { rankings, tickers, lastUpdated } = CORRIDOR_DATA;
   document.getElementById('rank-date').textContent = lastUpdated;
   const grid = document.getElementById('rankings-grid');
-
   const colors = { entry1Y:'#2ea043', entry90D:'#388bfd', ltUpside:'#a371f7', peg:'#d29922' };
   Object.entries(rankings).forEach(([key, r]) => {
     const getName = t => tickers[t]?.name || t;
-    const bestRows = r.best.map((t,i)=>`
-      <li class="rank-item">
-        <span class="rank-n">${i+1}</span>
-        <span class="rank-t">${t}</span>
-        <span class="rank-name">${getName(t)}</span>
-      </li>`).join('');
-    const worstRows = r.worst.map((t,i)=>`
-      <li class="rank-item">
-        <span class="rank-n">${i+1}</span>
-        <span class="rank-t" style="color:var(--red)">${t}</span>
-        <span class="rank-name">${getName(t)}</span>
-      </li>`).join('');
+    const bestRows = r.best.map((t,i)=>`<li class="rank-item">
+      <span class="rank-n">${i+1}</span>
+      <span class="rank-t">${t}</span>
+      <span class="rank-nm">${getName(t)}</span></li>`).join('');
+    const worstRows = r.worst.map((t,i)=>`<li class="rank-item">
+      <span class="rank-n">${i+1}</span>
+      <span class="rank-t" style="color:var(--red)">${t}</span>
+      <span class="rank-nm">${getName(t)}</span></li>`).join('');
     const card = document.createElement('div');
     card.className = 'rank-card';
-    card.innerHTML = `
-      <div class="rank-title">
-        <span class="rank-dot" style="background:${colors[key]||'#888'}"></span>${r.label}
-      </div>
+    card.innerHTML = `<div class="rank-title"><span class="rank-dot" style="background:${colors[key]||'#888'}"></span>${r.label}</div>
       <ul class="rank-list">${bestRows}</ul>
-      <div class="worst-sep">
-        <div class="worst-lbl">⚠ Least Attractive</div>
-        <ul class="rank-list">${worstRows}</ul>
-      </div>`;
+      <div class="worst-sep"><div class="worst-lbl">⚠ Least Attractive</div><ul class="rank-list">${worstRows}</ul></div>`;
     grid.appendChild(card);
   });
 }
@@ -235,27 +332,18 @@ function buildRankings() {
 // ── Positions ─────────────────────────────────────────────────────────────────
 function buildPositions() {
   const tbody = document.getElementById('positions-body');
-  const map = {
-    long:  ['🟢 Long',  'sb-long'],
-    short: ['🔴 Short', 'sb-short'],
-    watch: ['🔵 Watch', 'sb-watch'],
-    avoid: ['🟠 Avoid', 'sb-avoid'],
-  };
+  const map = { long:['🟢 Long','sb-long'], short:['🔴 Short','sb-short'], watch:['🔵 Watch','sb-watch'], avoid:['🟠 Avoid','sb-avoid'] };
   CORRIDOR_DATA.positions.forEach(p => {
     const [lbl, cls] = map[p.status]||['—',''];
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><b>${p.ticker}</b></td>
-      <td><span class="sbadge ${cls}">${lbl}</span></td>
-      <td class="pos-note">${p.note}</td>
-      <td class="pos-date">${p.updated}</td>`;
+    tr.innerHTML = `<td><b>${p.ticker}</b></td><td><span class="sbadge ${cls}">${lbl}</span></td><td class="pos-note">${p.note}</td><td class="pos-date">${p.updated}</td>`;
     tbody.appendChild(tr);
   });
 }
 
 // ── Corridor computation ──────────────────────────────────────────────────────
 function computeCorridors(closes, eps, window=90) {
-  if (!eps || eps <= 0) return null;
+  if (!eps || eps <= 0 || closes.length < 5) return null;
   const multiples = closes.map(c => c/eps);
   return closes.map((price, i) => {
     const start = Math.max(0, i-window+1);
@@ -264,200 +352,235 @@ function computeCorridors(closes, eps, window=90) {
     const sd    = arrStddev(win);
     return {
       price,
-      median: med*eps,
-      upper:  (med+1.5*sd)*eps,
-      lower:  (med-1.5*sd)*eps,
+      med15: (med+1.5*sd)*eps,   // +1.5σ
+      med10: (med+1.0*sd)*eps,   // +1.0σ
+      median: med*eps,            // median
+      low10: (med-1.0*sd)*eps,   // -1.0σ
+      low15: (med-1.5*sd)*eps,   // -1.5σ
     };
   });
 }
 
-// ── Chart rendering ───────────────────────────────────────────────────────────
-function buildCharts() {
-  const { tickers, forwardEPS } = CORRIDOR_DATA;
-  const grid = document.getElementById('charts-grid');
+// ── AJ-style corridor chart ───────────────────────────────────────────────────
+function buildCorridorCard(ticker, info, idx) {
+  const raw    = PRICE_DATA[ticker] || [];
+  const eps    = CORRIDOR_DATA.forwardEPS[ticker];
+  const pos    = CORRIDOR_DATA.positions.find(p => p.ticker === ticker);
+  const closes = raw.map(d => d.c);
+  const labels = raw.map(d => d.d);
+  const corr   = computeCorridors(closes, eps);
 
-  // Pull price date from first available ticker
+  const price   = closes.length ? closes[closes.length-1] : null;
+  const dateStr = labels.length ? fmtDate(labels[labels.length-1]) : '—';
+  const pct3M   = closes.length > 1 ? (price-closes[0])/closes[0]*100 : null;
+
+  // Corridor position
+  let badgeText='NO DATA', badgeCls='cb-none', toMedian=null, toUpper=null, toLower=null;
+  if (corr && price) {
+    const last = corr[corr.length-1];
+    toMedian = (last.median - price)/price*100;
+    toUpper  = (last.med15  - price)/price*100;
+    toLower  = (last.low15  - price)/price*100;
+    if      (price > last.med15) { badgeText='ABOVE CORRIDOR'; badgeCls='cb-above'; }
+    else if (price > last.med10) { badgeText='NEAR UPPER BAND'; badgeCls='cb-above'; }
+    else if (price < last.low15) { badgeText='BELOW CORRIDOR'; badgeCls='cb-below'; }
+    else if (price < last.low10) { badgeText='NEAR LOWER BAND'; badgeCls='cb-below'; }
+    else                          { badgeText='IN RANGE'; badgeCls='cb-in'; }
+  }
+
+  // 12M price target = last median value (proxy)
+  const pt12M = corr ? $f(corr[corr.length-1].median) : '—';
+  const fwdPE = eps && eps > 0 && price ? (price/eps).toFixed(1)+'x' : '—';
+
+  // Headline for banner
+  let headline = '';
+  if (corr && toMedian != null) {
+    const dir = toMedian >= 0 ? 'upside' : 'downside';
+    const absPct = Math.abs(toMedian).toFixed(0);
+    headline = `Corridor median implies <span class="hl-red">${absPct}% ${dir}</span> from current ${$f(price, 2)}`;
+  } else {
+    headline = `${info.name} — Share Price Corridor`;
+  }
+
+  // Build card
+  const card = document.createElement('div');
+  card.className = 'corridor-card';
+  card.innerHTML = `
+    <div class="cc-banner">
+      <div class="cc-banner-left">
+        <div class="cc-slide-num">${String(idx+1).padStart(2,'0')}</div>
+        <div class="cc-headline">${ticker} — ${headline}</div>
+      </div>
+      <div class="cc-logo">@alojoh</div>
+    </div>
+    <div class="cc-body">
+      <div class="cc-chart-area">
+        <div class="cc-chart-title">Share Price Corridor | Based on <span class="red">90-Day Median</span> Implied Forward P/E Multiple</div>
+        <div class="cc-y-label">$ per share</div>
+        <div class="cc-canvas-wrap"><canvas id="cv-${ticker}"></canvas></div>
+      </div>
+      <div class="cc-annotation">
+        <div class="cc-ann-date">${dateStr}</div>
+        <div class="cc-ann-body">
+          <div class="cc-corridor-badge ${badgeCls}">${badgeText}</div>
+          <div class="cc-ann-stat"><div class="lbl">Current Price</div><div class="val">${$f(price,2)}</div></div>
+          <div class="cc-ann-stat"><div class="lbl">Fwd P/E</div><div class="val">${fwdPE}</div></div>
+          <div class="cc-ann-stat"><div class="lbl">NTM EPS est.</div><div class="val">${eps && eps>0 ? '$'+eps : '—'}</div></div>
+          <div class="cc-ann-stat"><div class="lbl">Median Target</div><div class="val">${pt12M}</div></div>
+          ${toMedian!=null?`<div class="cc-ann-stat"><div class="lbl">To Median</div><div class="val" style="color:${toMedian>=0?'#155724':'#8b0000'}">${fmtPct(toMedian)}</div></div>`:''}
+          ${pct3M!=null?`<div class="cc-ann-stat"><div class="lbl">3M Change</div><div class="val" style="color:${pct3M>=0?'#155724':'#8b0000'}">${fmtPct(pct3M)}</div></div>`:''}
+          ${pos?`<div style="margin-top:8px;font-size:9px;color:#666;line-height:1.4;"><b>AJ:</b> ${pos.status.toUpperCase()} · ${pos.updated}</div>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="cc-legend">
+      <div class="cc-leg-item"><span class="cc-leg-line" style="background:#CC0000"></span>±1.5σ (outer)</div>
+      <div class="cc-leg-item"><span class="cc-leg-line" style="background:#009900"></span>±1.0σ (inner)</div>
+      <div class="cc-leg-item"><span class="cc-leg-dash" style="border-color:#999"></span>Median</div>
+      <div class="cc-leg-item"><span class="cc-leg-line" style="background:#1B1464"></span>Price</div>
+      <div class="cc-leg-item"><span class="cc-leg-line" style="background:#00CED1"></span>Today</div>
+      <div class="cc-formula">EPS (NTM) × P/E (NTM) = Share Price (implied)</div>
+    </div>
+    <div class="cc-attr">By @alojoh · CorridorWatch · ${dateStr}</div>
+  `;
+  document.getElementById('charts-grid').appendChild(card);
+
+  if (!closes.length) return;
+
+  // ── Chart.js datasets ──
+  const datasets = [];
+
+  if (corr) {
+    const u15 = corr.map(d=>d.med15);
+    const u10 = corr.map(d=>d.med10);
+    const mid = corr.map(d=>d.median);
+    const l10 = corr.map(d=>d.low10);
+    const l15 = corr.map(d=>d.low15);
+
+    // Fill zones (rendered in order from outer to inner so fills stack correctly)
+    // Outer red zones (between ±1.0σ and ±1.5σ)
+    datasets.push(
+      // +1.5σ line (upper red boundary)
+      { label:'+1.5σ', data:u15, borderColor:'#CC0000', borderWidth:1.5, pointRadius:0, tension:0.15, fill:'+1', backgroundColor:'rgba(204,0,0,0.10)', order:10 },
+      // +1.0σ line (upper green boundary)
+      { label:'+1.0σ', data:u10, borderColor:'#009900', borderWidth:1.2, pointRadius:0, tension:0.15, fill:'+1', backgroundColor:'rgba(0,153,0,0.10)', order:11 },
+      // Median (gray dashed)
+      { label:'Median', data:mid, borderColor:'#999999', borderWidth:1, borderDash:[6,3], pointRadius:0, tension:0.15, fill:'+1', backgroundColor:'rgba(0,153,0,0.10)', order:12 },
+      // -1.0σ line (lower green boundary)
+      { label:'-1.0σ', data:l10, borderColor:'#009900', borderWidth:1.2, pointRadius:0, tension:0.15, fill:'+1', backgroundColor:'rgba(204,0,0,0.10)', order:13 },
+      // -1.5σ line (lower red boundary)
+      { label:'-1.5σ', data:l15, borderColor:'#CC0000', borderWidth:1.5, pointRadius:0, tension:0.15, fill:false, order:14 },
+    );
+  }
+
+  // Price line (dark navy, on top)
+  datasets.push({
+    label: 'Price',
+    data: closes,
+    borderColor: '#1B1464',
+    borderWidth: 2,
+    pointRadius: 0,
+    tension: 0.1,
+    fill: false,
+    order: 1,
+  });
+
+  // "Today" vertical annotation via a 1-point dataset trick
+  const todayIdx = labels.length - 1;
+
+  // Tick spacing
+  const every = Math.max(1, Math.floor(labels.length / 5));
+
+  const ctx = document.getElementById('cv-'+ticker).getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { display: false },
+        annotation: {
+          annotations: {
+            todayLine: {
+              type: 'line',
+              xMin: todayIdx,
+              xMax: todayIdx,
+              borderColor: '#00CED1',
+              borderWidth: 1.5,
+              borderDash: [4, 3],
+              label: {
+                content: 'Today',
+                enabled: true,
+                position: 'start',
+                backgroundColor: 'rgba(0,206,209,0.15)',
+                color: '#00CED1',
+                font: { size: 9 },
+                padding: 2,
+              }
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: '#FAF6F1',
+          borderColor: '#D6CFC7',
+          borderWidth: 1,
+          titleColor: '#111',
+          bodyColor: '#555',
+          callbacks: {
+            label: ctx => {
+              if (!ctx.dataset.label) return null;
+              const v = ctx.parsed.y;
+              return ` ${ctx.dataset.label}: ${v==null?'—':'$'+v.toFixed(2)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#888',
+            font: { size: 9, family: '-apple-system, sans-serif' },
+            maxTicksLimit: 6,
+            maxRotation: 45,
+            callback: (val, idx) => idx % every === 0 ? labels[idx]?.slice(5) : '',
+          },
+          grid: { color: '#E8E3DC' },
+        },
+        y: {
+          position: 'left',
+          ticks: {
+            color: '#888',
+            font: { size: 9 },
+            callback: v => v >= 1000 ? '$'+Math.round(v) : '$'+v.toFixed(0),
+          },
+          grid: { color: '#E8E3DC' },
+        },
+      }
+    }
+  });
+}
+
+function buildCharts() {
+  const { tickers } = CORRIDOR_DATA;
   const firstKey = Object.keys(PRICE_DATA).find(k => PRICE_DATA[k]?.length);
   if (firstKey) {
     const last = PRICE_DATA[firstKey].slice(-1)[0];
     document.getElementById('price-date').textContent = last.d;
   }
-
-  Object.entries(tickers).forEach(([ticker, info]) => {
-    const raw   = PRICE_DATA[ticker] || [];
-    const eps   = forwardEPS[ticker];
-    const closes = raw.map(d => d.c);
-    const labels = raw.map(d => d.d);
-    const corr  = raw.length >= 10 ? computeCorridors(closes, eps) : null;
-
-    // ── Corridor position badge ──
-    let badgeText = 'NO DATA', badgeCls = 'cb-none';
-    let price = null, pct1M = null, toMedian = null, fwdPE = null;
-    if (closes.length) {
-      price = closes[closes.length-1];
-      const first = closes[0];
-      pct1M = (price - first)/first*100;
-    }
-    if (corr) {
-      const last = corr[corr.length-1];
-      if      (price > last.upper) { badgeText='ABOVE CORRIDOR'; badgeCls='cb-above'; }
-      else if (price < last.lower) { badgeText='BELOW CORRIDOR'; badgeCls='cb-below'; }
-      else                          { badgeText='IN RANGE';       badgeCls='cb-in'; }
-      toMedian = (last.median - price)/price*100;
-      if (eps && eps > 0) fwdPE = (price/eps).toFixed(1);
-    }
-
-    // ── Build card ──
-    const card = document.createElement('div');
-    card.className = 'chart-card';
-    card.innerHTML = `
-      <div class="cc-top">
-        <div class="cc-left">
-          <div class="ticker">${ticker}</div>
-          <div class="cname">${info.name} · ${info.exchange}</div>
-        </div>
-        <div class="cc-right">
-          <span class="cbadge ${badgeCls}">${badgeText}</span>
-          ${fwdPE ? `<span style="font-size:11px;color:var(--muted)">Fwd P/E: ${fwdPE}x</span>` : ''}
-        </div>
-      </div>
-      <div class="chart-wrap"><canvas id="cv-${ticker}"></canvas></div>
-      <div class="cc-stats">
-        ${price  != null ? `<span>Price: <b>${fmt(price)}</b></span>` : ''}
-        ${pct1M  != null ? `<span>~3M Chg: <b style="color:${pct1M>=0?'var(--green2)':'var(--red)'}">${fmtPct(pct1M)}</b></span>` : ''}
-        ${toMedian != null ? `<span>To Median: <b style="color:${toMedian>=0?'var(--green2)':'var(--red)'}">${fmtPct(toMedian)}</b></span>` : ''}
-        ${eps ? `<span>NTM EPS: <b>${eps > 0 ? '$'+eps : eps}</b></span>` : ''}
-      </div>`;
-    grid.appendChild(card);
-
-    if (!closes.length) return;
-
-    // ── Chart datasets ──
-    const datasets = [{
-      label: 'Price',
-      data: closes,
-      borderColor: '#e6edf3',
-      borderWidth: 1.8,
-      pointRadius: 0,
-      tension: 0.15,
-      order: 1,
-    }];
-
-    if (corr) {
-      const upper  = corr.map(d=>d.upper);
-      const median = corr.map(d=>d.median);
-      const lower  = corr.map(d=>d.lower);
-
-      datasets.push(
-        {
-          label: 'Upper (+1.5σ)',
-          data: upper,
-          borderColor: '#f85149',
-          borderWidth: 1,
-          borderDash: [5,3],
-          pointRadius: 0,
-          tension: 0.15,
-          fill: false,
-          order: 3,
-        },
-        {
-          label: 'Median',
-          data: median,
-          borderColor: '#d29922',
-          borderWidth: 1.2,
-          borderDash: [7,3],
-          pointRadius: 0,
-          tension: 0.15,
-          fill: false,
-          order: 4,
-        },
-        {
-          label: 'Lower (−1.5σ)',
-          data: lower,
-          borderColor: '#2ea043',
-          borderWidth: 1,
-          borderDash: [5,3],
-          pointRadius: 0,
-          tension: 0.15,
-          backgroundColor: 'rgba(46,160,67,0.06)',
-          fill: '-2',  // fill to upper band
-          order: 5,
-        },
-        {
-          // invisible dataset for fill target (upper)
-          label: '',
-          data: upper,
-          borderWidth: 0,
-          pointRadius: 0,
-          backgroundColor: 'rgba(248,81,73,0.04)',
-          fill: '+1',
-          order: 6,
-        }
-      );
-    }
-
-    // ── Tick density ──
-    const every = Math.max(1, Math.floor(labels.length / 6));
-    const ctx = document.getElementById('cv-'+ticker).getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: { labels, datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#1c2128',
-            borderColor: '#30363d',
-            borderWidth: 1,
-            titleColor: '#e6edf3',
-            bodyColor: '#7d8590',
-            callbacks: {
-              label: ctx => {
-                if (!ctx.dataset.label) return null;
-                const v = ctx.parsed.y;
-                return ` ${ctx.dataset.label}: ${v == null ? '—' : fmt(v)}`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: '#7d8590',
-              font: { size: 9 },
-              maxTicksLimit: 7,
-              maxRotation: 0,
-              callback: (val, idx) => idx % every === 0 ? labels[idx]?.slice(5) : '',
-            },
-            grid: { color: '#1e2430' },
-          },
-          y: {
-            ticks: {
-              color: '#7d8590',
-              font: { size: 9 },
-              callback: v => v >= 1000 ? '$'+Math.round(v) : '$'+v.toFixed(0),
-            },
-            grid: { color: '#1e2430' },
-          }
-        }
-      }
-    });
+  Object.entries(tickers).forEach(([ticker, info], idx) => {
+    buildCorridorCard(ticker, info, idx);
   });
 }
 
-// ── Method toggle ─────────────────────────────────────────────────────────────
 function toggleMethod(btn) {
   const body = btn.nextElementSibling;
   body.classList.toggle('open');
-  document.getElementById('method-arrow').textContent =
-    body.classList.contains('open') ? '▲' : '▼';
+  document.getElementById('method-arrow').textContent = body.classList.contains('open') ? '▲' : '▼';
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 buildRankings();
 buildPositions();
 buildCharts();
